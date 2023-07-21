@@ -41,7 +41,7 @@ class GetChildrenObject {
 @JsonSerializable()
 class GetChildrenData {
   final int ups;
-  final String thumbnail;
+  final String? thumbnail;
   final String title;
   final String selftext;
 

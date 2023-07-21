@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:newspaper/domain/api_client.dart';
 import 'package:newspaper/domain/post.dart';
-import 'package:http/http.dart' as http;
 
 class PostsPage extends StatelessWidget {
   const PostsPage({super.key});
@@ -13,8 +12,8 @@ class PostsPage extends StatelessWidget {
         title: const Text('New Posts'),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<GetChildrenData>>(
-        future: fetchPosts(http.Client()),
+      body: FutureBuilder<List<GetChildrenObject>>(
+        future: RedditImplementation().getOnlyChilds(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Text('amigos we have error');
@@ -37,17 +36,24 @@ class PostList extends StatelessWidget {
     required this.posts,
   });
 
-  final List<GetChildrenData> posts;
+  final List<GetChildrenObject> posts;
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
+            crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10),
         itemCount: posts.length,
         itemBuilder: (context, index) {
-          return Image.network(posts[index].thumbnail);
+          return posts[index].data.thumbnail != null &&
+                  posts[index].data.thumbnail!.contains(RegExp(r'^https://.*'))
+              ? Image.network(
+                  posts[index].data.thumbnail!,
+                  fit: BoxFit.contain,
+                )
+              : const Placeholder(
+                  child: Center(child: Text('No image')),
+                );
         });
   }
 }
